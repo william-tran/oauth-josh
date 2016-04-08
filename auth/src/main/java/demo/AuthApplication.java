@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -19,6 +20,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.stereotype.Controller;
@@ -30,6 +33,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import java.security.KeyPair;
 import java.security.Principal;
+import java.util.Map;
 
 // TODO why doesn't this play well when I add @EnableDiscoveryClient?
 
@@ -96,6 +100,17 @@ public class AuthApplication extends WebMvcConfigurerAdapter {
 					new ClassPathResource("keystore.jks"), "foobar".toCharArray())
 					.getKeyPair("test");
 			converter.setKeyPair(keyPair);
+			
+			DefaultAccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
+			tokenConverter.setUserTokenConverter(new DefaultUserAuthenticationConverter() {
+				@Override
+				public Map<String, ?> convertUserAuthentication(Authentication authentication) {
+					Map<String, Object> userAuthentication = (Map<String, Object>) super.convertUserAuthentication(authentication);
+					userAuthentication.put("some_custom_claim", "brometheus");
+					return userAuthentication;
+				}
+			});
+			converter.setAccessTokenConverter(tokenConverter);
 			return converter;
 		}
 
