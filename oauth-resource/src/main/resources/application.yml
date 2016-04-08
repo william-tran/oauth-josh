@@ -3,4 +3,4 @@ security:
   oauth2:
     resource:
       jwt:
-        key-uri: http://localhost:8080/uaa/token_key
+        key-uri: http://localhost:8080/uaa/oauth/token_key
