@@ -1,0 +1,6 @@
+server.port: 8081
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-uri: http://localhost:8080/uaa/token_key

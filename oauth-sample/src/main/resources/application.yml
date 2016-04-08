@@ -1,0 +1,14 @@
+server.port: 8082
+
+security:
+  oauth2:
+    client:
+      client-id: customer-portal
+      client-secret: secret
+      access-token-uri: http://localhost:8080/uaa/oauth/token
+      grant-type: authorization_code
+      user-authorization-uri: http://localhost:8080/uaa/oauth/authorize
+    resource:
+      jwt:
+        key-uri: http://localhost:8080/uaa/token_key
+      
